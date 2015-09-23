@@ -1,3 +1,5 @@
+#include <QuickAnaHPC/AnalysisAlg.h>
+
 #ifdef __CINT__
 
 #pragma link off all globals;
@@ -5,4 +7,8 @@
 #pragma link off all functions;
 #pragma link C++ nestedclass;
 
+#endif
+
+#ifdef __CINT__
+#pragma link C++ class AnalysisAlg+;
 #endif
