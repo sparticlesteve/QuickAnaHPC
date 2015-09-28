@@ -40,7 +40,6 @@ def parse_args():
             help='Enable optimized QuickAna scheduler')
     # Options to add:
     # - pre-built SampleHandler directory to load from
-    # - directories to scan for samples
     return parser.parse_args()
 
 def load_samples(args):
