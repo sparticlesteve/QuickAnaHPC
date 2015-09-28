@@ -36,6 +36,8 @@ def parse_args():
             help='Specify max number of events per worker in batch job')
     add_arg('--nProofWorkers', type=int,
             help='Specify number of workers for ProofDriver')
+    add_arg('--opt', action='store_true',
+            help='Enable optimized QuickAna scheduler')
     # Options to add:
     # - pre-built SampleHandler directory to load from
     # - directories to scan for samples
@@ -116,6 +118,8 @@ def main():
     alg.orDef = 'default'
     if args.noSysts:
         alg.doSystematics = False
+    if args.opt:
+        alg.schedulerDef = 'optimized'
     job.algsAdd(alg)
 
     # Driver
