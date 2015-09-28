@@ -1,3 +1,5 @@
+#include <chrono>
+
 #include "TError.h"
 #include "TH1F.h"
 
@@ -89,9 +91,15 @@ EL::StatusCode AnalysisAlg::initialize()
 EL::StatusCode AnalysisAlg::execute()
 {
   static int i = 0;
-  const int freq = 10;
+  const int freq = 100;
+  static auto lastTime = std::chrono::steady_clock::now();
   if((i % freq) == 0) {
-    Info("AnalysisAlg::execute", "Entry %i", i);
+    typedef std::chrono::duration<float> fsec;
+    auto currentTime = std::chrono::steady_clock::now();
+    fsec diffTime = currentTime - lastTime;
+    float rate = float(freq) / diffTime.count();
+    lastTime = currentTime;
+    Info("AnalysisAlg::execute", "Entry %i, %f evts/s", i, rate);
   }
   i++;
 
