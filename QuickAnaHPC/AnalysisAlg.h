@@ -90,6 +90,15 @@ class AnalysisAlg : public EL::Algorithm, public ana::Configuration
     /// Declare ROOT dictionary methods
     ClassDef(AnalysisAlg, 1);
 
+  public:
+
+    //
+    // Configuration options
+    //
+
+    /// Toggle systematics
+    bool doSystematics;
+
   private:
 
     /// QuickAna analysis tool.
