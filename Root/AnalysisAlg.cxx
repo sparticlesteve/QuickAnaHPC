@@ -45,12 +45,10 @@ EL::StatusCode AnalysisAlg::initialize()
 
   // Setup systematics
   if(doSystematics) {
-    std::cout << "SETTING UP SYSTEMATICS" << std::endl;
     auto sysList =
       CP::make_systematics_vector( quickAna->recommendedSystematics() );
     if(quickAna->setSystematics(sysList).isFailure())
       return EL::StatusCode::FAILURE;
-    abort();
   }
 
   // Book some histograms for each systematic
