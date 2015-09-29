@@ -90,6 +90,7 @@ EL::StatusCode AnalysisAlg::initialize()
 //-----------------------------------------------------------------------------
 EL::StatusCode AnalysisAlg::execute()
 {
+  // Printouts for progress and processing rate
   static int i = 0;
   const int freq = 100;
   static auto lastTime = std::chrono::steady_clock::now();
