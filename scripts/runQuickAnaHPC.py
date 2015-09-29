@@ -6,7 +6,7 @@ import argparse
 import logging
 logger = logging.getLogger('runQuickAnaHPC')
 
-from XAODTestCodes.setup import load_rc_libs
+from QuickAnaHPC.setup import load_rc_libs
 
 def setup_logger(level=logging.INFO):
     """Sets up logging for the script"""
