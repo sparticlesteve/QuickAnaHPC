@@ -74,7 +74,7 @@ def setup_driver(args):
         driver = EL.SoGEDriver()
         driver.options().setString(EL.Job.optSubmitFlags, '-S /bin/bash')
         # TODO: make the IO configurable
-        submit_opts = '-l gscratchio=1,h_vmem=8G'
+        submit_opts = '-l gscratchio=1,h_vmem=6G'
         driver.options().setString('nc_EventLoop_SubmitFlags', submit_opts)
         driver.shellInit = 'shopt -s expand_aliases\n'
     elif args.driver == 'proof':
