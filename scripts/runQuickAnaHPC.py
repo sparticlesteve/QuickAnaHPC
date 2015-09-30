@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import os
-import sys
+import shutil
 import argparse
 import logging
 logger = logging.getLogger('runQuickAnaHPC')
@@ -25,6 +25,8 @@ def parse_args():
     add_arg('--noSysts', action='store_true', help='Disable systematics')
     add_arg('--jobDir', default='jobDir',
             help='Output directory for EventLoop')
+    add_arg('--overwrite', action='store_true',
+            help='Overwrite jobDir if it exists')
     add_arg('--scanDir', default='$SCRATCH',
             help='Input dir to scan with SampleHandler for samples')
     add_arg('--samplePattern', default='*',
@@ -90,6 +92,10 @@ def main():
 
     # Command line arguments
     args = parse_args()
+
+    # Delete jobDir if requested
+    if args.overwrite and os.path.exists(args.jobDir):
+        shutil.rmtree(args.jobDir)
 
     # RootCore libraries
     logger.info('Loading RootCore libraries')
