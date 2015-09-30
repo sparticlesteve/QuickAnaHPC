@@ -31,6 +31,7 @@ def parse_args():
             help='Input dir to scan with SampleHandler for samples')
     add_arg('--samplePattern', action='append', default=[],
             help='Glob pattern for filtering samples in SampleHandler')
+    add_arg('--sampleHandler', help='Location of a saved SampleHandler ROOT file')
     add_arg('--maxEvents', help='Set max number of events per sample')
     add_arg('--driver', choices=['direct', 'pdsf', 'proof'], default='direct',
             help='Specify the EL driver to use')
@@ -48,12 +49,15 @@ def load_samples(args):
     """Build a SampleHandler"""
     from ROOT import SH
     sh = SH.SampleHandler()
-    sh.setMetaString('nc_tree', 'CollectionTree')
-    scanDir = os.path.expandvars(args.scanDir)
-    patterns = ['*'+p+'*' for p in args.samplePattern]
-    if len(patterns) == 0: patterns = ['*']
-    for pattern in patterns:
-        SH.ScanDir().samplePattern(pattern).scan(sh, scanDir)
+    if args.sampleHandler:
+        sh.load(args.sampleHandler)
+    else:
+        sh.setMetaString('nc_tree', 'CollectionTree')
+        scanDir = os.path.expandvars(args.scanDir)
+        patterns = ['*'+p+'*' for p in args.samplePattern]
+        if len(patterns) == 0: patterns = ['*']
+        for pattern in patterns:
+            SH.ScanDir().samplePattern(pattern).scan(sh, scanDir)
     if args.eventsPerWorker:
         from ROOT import EL
         SH.scanNEvents(sh)
