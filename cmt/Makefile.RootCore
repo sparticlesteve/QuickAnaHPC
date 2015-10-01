@@ -34,7 +34,7 @@ PACKAGE_DEP = EventLoop QuickAna CxxUtils PATInterfaces
 PACKAGE_TRYDEP       = 
 
 # list pattern of scripts to link directly into binary path:
-PACKAGE_SCRIPTS      = scripts/runQuickAnaHPC.py
+PACKAGE_SCRIPTS      = scripts/runQuickAnaHPC.py scripts/prepareSamples.py
 
 # whether to use pedantic compilation:
 PACKAGE_PEDANTIC     = 1
