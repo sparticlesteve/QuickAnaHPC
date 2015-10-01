@@ -23,7 +23,7 @@ to configure, steer, and submit the application to various EventLoop backends.
   which configures and launches the application. Has several command line
   options for specifying the input samples, the driver to use, and various
   other job configuration options.
-  * The '--task ID:N' option allows to specify a chunk of the input data for
+  * The `--task ID:N` option allows to specify a chunk of the input data for
     processing. The process will only use the ID-th chunk of size 1/N of the
     input samples. If samples are broken up into individual files, this is a
     useful way to distribute files evenly across separately submitted tasks.
