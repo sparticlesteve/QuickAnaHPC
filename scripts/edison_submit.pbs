@@ -1,0 +1,19 @@
+#PBS -m ae
+#PBS -q regular
+#PBS -l mppwidth=24
+#PBS -l walltime=03:00:00
+#PBS -N quickana_hpc
+#PBS -j oe
+#PBS -o logs/$PBS_JOBNAME.$PBS_JOBID
+
+cd $PBS_O_WORKDIR
+# nuke the cray environment
+module purge
+APRUN=/opt/cray/alps/default/bin/aprun
+# instruct aprun to use shifter
+export CRAY_ROOTFS=UDI
+# get rid of cray PYTHONSTARTUP
+unset PYTHONSTARTUP
+
+# Run a simple setup script
+$APRUN -n 1 -N 1 ./edison_batch_script.sh
