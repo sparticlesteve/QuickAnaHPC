@@ -4,18 +4,8 @@ import os
 import shutil
 import argparse
 import logging
-logger = logging.getLogger('runQuickAnaHPC')
-
-from QuickAnaHPC.setup import load_rc_libs
-
-def setup_logger(level=logging.INFO):
-    """Sets up logging for the script"""
-    logger.setLevel(level)
-    ch = logging.StreamHandler()
-    log_string = '%(name)s   %(levelname)s   %(message)s'
-    formatter = logging.Formatter(log_string)
-    ch.setFormatter(formatter)
-    logger.addHandler(ch)
+from QuickAnaHPC.setup import load_rc_libs, logger
+from QuickAnaHPC.samples import load_samples, print_samples
 
 def parse_args():
     """Parse command line arguments"""
@@ -32,6 +22,9 @@ def parse_args():
     add_arg('--samplePattern', action='append', default=[],
             help='Glob pattern for filtering samples in SampleHandler')
     add_arg('--sampleHandler', help='Location of a saved SampleHandler ROOT file')
+    add_arg('--task', help='Task ID in format "ID:N", where N ' +
+            'is the total number of tasks. If specified, the input samples ' +
+            'will be split into N chunks and I will process chunk i=ID only.')
     add_arg('--maxEvents', help='Set max number of events per sample')
     add_arg('--driver', choices=['direct', 'pdsf', 'proof'], default='direct',
             help='Specify the EL driver to use')
@@ -44,33 +37,6 @@ def parse_args():
     # Options to add:
     # - pre-built SampleHandler directory to load from
     return parser.parse_args()
-
-def load_samples(args):
-    """Build a SampleHandler"""
-    from ROOT import SH
-    sh = SH.SampleHandler()
-    if args.sampleHandler:
-        sh.load(args.sampleHandler)
-    else:
-        sh.setMetaString('nc_tree', 'CollectionTree')
-        scanDir = os.path.expandvars(args.scanDir)
-        patterns = ['*'+p+'*' for p in args.samplePattern]
-        if len(patterns) == 0: patterns = ['*']
-        for pattern in patterns:
-            SH.ScanDir().samplePattern(pattern).scan(sh, scanDir)
-    if args.eventsPerWorker:
-        from ROOT import EL
-        SH.scanNEvents(sh)
-        sh.setMetaDouble(EL.Job.optEventsPerWorker, args.eventsPerWorker)
-    return sh
-
-def print_samples(sh):
-    """Compactly print out contents of a SampleHandler"""
-    logger.info('Number of samples: %i', len(sh))
-    for s in sh:
-        logger.info('Sample: %s', s.name())
-        logger.info('  Number of files:  %i', s.numFiles())
-        logger.info('  Number of events: %i', s.getNumEntries())
 
 def setup_driver(args):
     """Sets up the driver depending on the arguments"""
@@ -94,11 +60,9 @@ def setup_driver(args):
 
 def main():
     """Main executable function"""
-    setup_logger()
-    logger.info('Application begin')
-
     # Command line arguments
     args = parse_args()
+    logger.info('Application begin')
 
     # Delete jobDir if requested
     if args.overwrite and os.path.exists(args.jobDir):
