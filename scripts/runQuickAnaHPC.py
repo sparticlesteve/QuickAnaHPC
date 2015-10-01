@@ -5,7 +5,8 @@ import shutil
 import argparse
 import logging
 from QuickAnaHPC.setup import load_rc_libs, logger
-from QuickAnaHPC.samples import load_samples, print_samples
+from QuickAnaHPC.samples import (scan_samples, split_samples,
+                                 select_by_task, print_samples)
 
 def parse_args():
     """Parse command line arguments"""
@@ -17,11 +18,13 @@ def parse_args():
             help='Output directory for EventLoop')
     add_arg('--overwrite', action='store_true',
             help='Overwrite jobDir if it exists')
-    add_arg('--scanDir', default='$SCRATCH',
+    add_arg('--scanDir', default='$GSCRATCH/xAOD',
             help='Input dir to scan with SampleHandler for samples')
     add_arg('--samplePattern', action='append', default=[],
             help='Glob pattern for filtering samples in SampleHandler')
     add_arg('--sampleHandler', help='Location of a saved SampleHandler ROOT file')
+    add_arg('--splitSamples', action='store_true',
+            help='Split samples into 1-file each')
     add_arg('--task', help='Task ID in format "ID:N", where N ' +
             'is the total number of tasks. If specified, the input samples ' +
             'will be split into N chunks and I will process chunk i=ID only.')
@@ -34,9 +37,32 @@ def parse_args():
             help='Specify number of workers for ProofDriver')
     add_arg('--opt', action='store_true',
             help='Enable optimized QuickAna scheduler')
-    # Options to add:
-    # - pre-built SampleHandler directory to load from
     return parser.parse_args()
+
+def load_samples(args):
+    """
+    Build a SampleHandler.
+    Not all these options are compatible with each other.
+    It might thus be better to split this up somehow.
+    """
+    from ROOT import SH
+    if args.sampleHandler:
+        sh = SH.SampleHandler()
+        sh.load(args.sampleHandler)
+    else:
+        sh = scan_samples(args.scanDir, args.samplePattern)
+    # Split samples by file if requested
+    if args.splitSamples:
+        sh = split_samples(sh, 1)
+    # Choose samples according to task ID
+    if args.task:
+        task, numTasks = map(int, args.task.split(':'))
+        sh = select_by_task(sh, task, numTasks)
+    if args.eventsPerWorker:
+        from ROOT import EL
+        SH.scanNEvents(sh)
+        sh.setMetaDouble(EL.Job.optEventsPerWorker, args.eventsPerWorker)
+    return sh
 
 def setup_driver(args):
     """Sets up the driver depending on the arguments"""

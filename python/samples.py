@@ -6,8 +6,8 @@ def scan_samples(scanDir, samplePatterns = []):
     from ROOT import SH
     sh = SH.SampleHandler()
     sh.setMetaString('nc_tree', 'CollectionTree')
-    scanDir = os.path.expandvars(args.scanDir)
-    patterns = ['*'+p+'*' for p in args.samplePattern]
+    scanDir = os.path.expandvars(scanDir)
+    patterns = ['*'+p+'*' for p in samplePatterns]
     if len(patterns) == 0: patterns = ['*']
     for pattern in patterns:
         SH.ScanDir().samplePattern(pattern).scan(sh, scanDir)
@@ -20,6 +20,7 @@ def split_samples(sh, num_events=1000):
     """
     from ROOT import SH
     splitSH = SH.SampleHandler()
+    SH.scanNEvents(sh)
     for sample in sh:
         splitSH.add(SH.splitSample(sample, num_events))
     return splitSH
@@ -35,28 +36,6 @@ def select_by_task(sh, task_id, num_tasks):
     for i in xrange(task_id, len(sh), num_tasks):
         taskSH.add(sh[i])
     return taskSH
-
-def load_samples(args):
-    """
-    Build a SampleHandler.
-    Not all these options are compatible with each other.
-    It might thus be better to split this up somehow.
-    """
-    from ROOT import SH
-    if args.sampleHandler:
-        sh = SH.SampleHandler()
-        sh.load(args.sampleHandler)
-    else:
-        sh = scan_samples(args.scanDir, args.samplePatterns)
-    # Choose samples according to task ID
-    if args.task:
-        task, numTasks = map(int, args.task.split(':'))
-        sh = select_by_task(sh, task, numTasks)
-    if args.eventsPerWorker:
-        from ROOT import EL
-        SH.scanNEvents(sh)
-        sh.setMetaDouble(EL.Job.optEventsPerWorker, args.eventsPerWorker)
-    return sh
 
 def print_samples(sh):
     """Compactly print out contents of a SampleHandler"""
