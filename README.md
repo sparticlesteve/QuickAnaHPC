@@ -30,3 +30,4 @@ to configure, steer, and submit the application to various EventLoop backends.
 * [Python modules](python) - Utility code for sample management, logging, and
   loading RootCore libraries. Can be expanded as necessary. I may move some
   machine-specific or driver-specific setups in here.
+* Edison example submission scripts in [scripts](scripts).
