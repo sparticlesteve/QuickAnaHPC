@@ -43,5 +43,8 @@ def print_samples(sh):
     logger.info('Number of samples: %i', len(sh))
     for s in sh:
         logger.info('Sample: %s', s.name())
-        logger.info('  Number of files:  %i', s.numFiles())
+        numFiles = s.numFiles()
+        logger.info('  Number of files:  %i', numFiles)
         logger.info('  Number of events: %i', s.getNumEntries())
+        for i in range(numFiles):
+            logger.info('  %s', s.fileName(i))
