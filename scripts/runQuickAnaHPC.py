@@ -103,6 +103,9 @@ def main():
     logger.info('Loading samples')
     sh = load_samples(args)
     print_samples(sh)
+    if len(sh) == 0:
+        logger.info('Exiting early due to empty sample list')
+        return
 
     # Configure the job
     job = EL.Job()
