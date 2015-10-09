@@ -33,8 +33,9 @@ def select_by_task(sh, task_id, num_tasks):
     from ROOT import SH
     # Create new SampleHandler for this task
     taskSH = SH.SampleHandler()
-    for i in xrange(task_id, len(sh), num_tasks):
-        taskSH.add(sh[i])
+    if task_id < num_tasks:
+        for i in xrange(task_id, len(sh), num_tasks):
+            taskSH.add(sh[i])
     return taskSH
 
 def print_samples(sh):
