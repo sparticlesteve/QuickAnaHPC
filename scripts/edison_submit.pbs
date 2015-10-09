@@ -1,7 +1,7 @@
 #PBS -m ae
 #PBS -q regular
 #PBS -l mppwidth=24
-#PBS -l walltime=03:00:00
+#PBS -l walltime=05:00:00
 #PBS -N quickana_hpc
 #PBS -j oe
 #PBS -o logs/$PBS_JOBNAME.$PBS_JOBID
@@ -15,5 +15,5 @@ export CRAY_ROOTFS=UDI
 # get rid of cray PYTHONSTARTUP
 unset PYTHONSTARTUP
 
-# Run a simple setup script
-$APRUN -n 1 -N 1 ./edison_batch_script.sh
+# Run a job on one node
+$APRUN -n 1 -N 1 -d 24 ./edison_batch_script.sh
