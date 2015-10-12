@@ -120,7 +120,7 @@ def main():
     alg.tauDef = 'default'
     alg.jetDef = 'default'
     alg.metDef = 'default'
-    alg.orDef = 'default'
+    alg.orDef = 'none'
     if args.noSysts:
         alg.doSystematics = False
     if args.opt:
