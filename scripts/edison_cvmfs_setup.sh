@@ -23,22 +23,16 @@ export ATLAS_LOCAL_ROOT_BASE="/cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase"
 
 # Set up GCC. This sets up required standard libs.
 source ${ATLAS_LOCAL_ROOT_BASE}/packageSetups/atlasLocalGccSetup.sh --gccVersion gcc484_x86_64_slc6
-echo .
-echo .
 
 # Setup python in standard way.
 source ${ATLAS_LOCAL_ROOT_BASE}/packageSetups/atlasLocalPythonSetup.sh 2.7.4-x86_64-slc6-gcc48
 
 # Try setting up ROOT (manually; bypassing standard setup)
 source /cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase/x86_64/root/6.02.12-x86_64-slc6-gcc48-opt/bin/thisroot.sh
-# Standard ROOT setup fails with current analysis image (missing cvmfs directories)
+# TODO: Try standard ROOT setup again
 #source ${ATLAS_LOCAL_ROOT_BASE}/packageSetups/atlasLocalROOTSetup.sh --rootVersion 6.02.12-x86_64-slc6-gcc48-opt
-echo .
-echo .
 
 # Try setting up the analysis release using my pre-built workdir.
 cd ..
 source /cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase/x86_64/rcSetup/current/rcSetup.sh
-echo .
-echo .
 cd run_edison
