@@ -13,7 +13,7 @@ def scan_samples(scanDir, samplePatterns = []):
         SH.ScanDir().samplePattern(pattern).scan(sh, scanDir)
     return sh
 
-def split_samples(sh, num_events=1000):
+def split_samples(sh, num_events=150000):
     """
     Split a sample handler's samples into smaller samples of size num_events.
     This function does not split individual files.

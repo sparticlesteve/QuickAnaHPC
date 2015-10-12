@@ -23,8 +23,7 @@ def parse_args():
     add_arg('--samplePattern', action='append', default=[],
             help='Glob pattern for filtering samples in SampleHandler')
     add_arg('--sampleHandler', help='Location of a saved SampleHandler ROOT file')
-    add_arg('--splitSamples', action='store_true',
-            help='Split samples into 1-file each')
+    add_arg('--splitSamples', type=int, help='Split samples by number of events')
     add_arg('--task', help='Task ID in format "ID:N", where N ' +
             'is the total number of tasks. If specified, the input samples ' +
             'will be split into N chunks and I will process chunk i=ID only.')
@@ -52,8 +51,8 @@ def load_samples(args):
     else:
         sh = scan_samples(args.scanDir, args.samplePattern)
     # Split samples by file if requested
-    if args.splitSamples:
-        sh = split_samples(sh, 1)
+    if args.splitSamples is not None:
+        sh = split_samples(sh, args.splitSamples)
     # Choose samples according to task ID
     if args.task:
         task, numTasks = map(int, args.task.split(':'))
