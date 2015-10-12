@@ -104,6 +104,9 @@ class AnalysisAlg : public EL::Algorithm, public ana::Configuration
     /// QuickAna analysis tool.
     std::unique_ptr<ana::IQuickAna> m_quickAna; //!
 
+    /// Cache last event number to catch duplicate event issue
+    unsigned long long m_lastEvent;
+
 };
 
 #endif

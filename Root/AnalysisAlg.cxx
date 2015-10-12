@@ -20,7 +20,7 @@ ClassImp(AnalysisAlg)
 // Constructor
 //-----------------------------------------------------------------------------
 AnalysisAlg::AnalysisAlg()
-  : doSystematics(true)
+  : doSystematics(true), m_lastEvent(0)
 {
 }
 
@@ -103,6 +103,19 @@ EL::StatusCode AnalysisAlg::execute()
     Info("AnalysisAlg::execute", "Entry %i, %f evts/s", i, rate);
   }
   i++;
+
+  // Workaround for duplicate successive events issue.
+  // Compare event number to last one and skip if they're the same.
+  auto evtStore = wk()->xaodEvent();
+  const xAOD::EventInfo* evtInfo = nullptr;
+  if(evtStore->retrieve(evtInfo, "EventInfo").isFailure())
+    return EL::StatusCode::FAILURE;
+  if(m_lastEvent == evtInfo->eventNumber()) {
+    Warning("AnalysisAlg::execute", "Skipping duplicate event %llu at entry %i",
+            m_lastEvent, i);
+    return EL::StatusCode::SUCCESS;
+  }
+  m_lastEvent = evtInfo->eventNumber();
 
   // Loop over systematics
   for(auto& sys : m_quickAna->systematics()) {
