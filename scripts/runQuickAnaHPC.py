@@ -27,7 +27,7 @@ def parse_args():
     add_arg('--task', help='Task ID in format "ID:N", where N ' +
             'is the total number of tasks. If specified, the input samples ' +
             'will be split into N chunks and I will process chunk i=ID only.')
-    add_arg('--maxEvents', help='Set max number of events per sample')
+    add_arg('--maxEvents', type=int, help='Set max number of events per sample')
     add_arg('--driver', choices=['direct', 'pdsf', 'proof'], default='direct',
             help='Specify the EL driver to use')
     add_arg('--eventsPerWorker', type=int,
@@ -113,7 +113,7 @@ def main():
     job.options().setDouble(EL.Job.optXAODPerfStats, 1)
     #job.options().setDouble(EL.Job.optPrintPerFileStats, 1)
     if args.maxEvents:
-        job.options().setInteger(job.optMaxEvents, int(args.maxEvents))
+        job.options().setInteger(job.optMaxEvents, args.maxEvents)
 
     # Setup the algorithm
     alg = AnalysisAlg()
