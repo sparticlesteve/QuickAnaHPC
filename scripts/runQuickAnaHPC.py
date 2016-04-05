@@ -114,7 +114,7 @@ def main():
     # Perf stats
     job.options().setDouble(EL.Job.optXAODPerfStats, 1)
     #job.options().setDouble(EL.Job.optPrintPerFileStats, 1)
-    if args.maxEvents:
+    if args.maxEvents is not None:
         job.options().setInteger(job.optMaxEvents, args.maxEvents)
 
     # Setup the algorithm
