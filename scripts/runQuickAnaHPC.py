@@ -116,7 +116,7 @@ def main():
     jobOpts.setDouble(EL.Job.optXAODPerfStats, 1)
     jobOpts.setDouble(EL.Job.optCacheSize, 100*1024*1024)
     jobOpts.setDouble(EL.Job.optCacheLearnEntries, 10)
-    if args.maxEvents:
+    if args.maxEvents is not None:
         job.options().setInteger(job.optMaxEvents, args.maxEvents)
 
     # Setup the algorithm
