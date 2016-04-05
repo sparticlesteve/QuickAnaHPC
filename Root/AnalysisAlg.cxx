@@ -98,7 +98,7 @@ EL::StatusCode AnalysisAlg::execute()
     typedef std::chrono::duration<float> fsec;
     auto currentTime = std::chrono::steady_clock::now();
     fsec diffTime = currentTime - lastTime;
-    float rate = float(freq) / diffTime.count();
+    float rate = (i == 0) ? 0.f : float(freq) / diffTime.count();
     lastTime = currentTime;
     Info("AnalysisAlg::execute", "Entry %i, %f evts/s", i, rate);
   }
