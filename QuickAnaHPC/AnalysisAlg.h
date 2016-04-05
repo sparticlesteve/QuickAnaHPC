@@ -6,6 +6,8 @@
 #include "EventLoop/Algorithm.h"
 #include "QuickAna/Configuration.h"
 #include "QuickAna/IQuickAna.h"
+#include "QuickAna/IOutputTool.h"
+
 
 /// @brief Simple EL algorithm running QuickAna
 ///
@@ -99,10 +101,19 @@ class AnalysisAlg : public EL::Algorithm, public ana::Configuration
     /// Toggle systematics
     bool doSystematics;
 
+    /// Toggle output xAOD writing
+    bool writeXAOD;
+
+    /// Output xAOD name
+    std::string outputXAODName;
+
   private:
 
     /// QuickAna analysis tool.
     std::unique_ptr<ana::IQuickAna> m_quickAna; //!
+
+    /// QuickAna output xAOD tool
+    std::unique_ptr<ana::IOutputTool> m_outputTool; //!
 
     /// Cache last event number to catch duplicate event issue
     unsigned long long m_lastEvent;

@@ -1,16 +1,22 @@
+#include "QuickAnaHPC/AnalysisAlg.h"
+
 #include <chrono>
 
 #include "TError.h"
 #include "TH1F.h"
 
-#include "QuickAnaHPC/AnalysisAlg.h"
-
 #include "CxxUtils/make_unique.h"
+
 #include "EventLoop/Job.h"
 #include "EventLoop/StatusCode.h"
 #include "EventLoop/Worker.h"
-#include "QuickAna/QuickAna.h"
+#include "EventLoop/OutputStream.h"
+
 #include "PATInterfaces/SystematicsUtil.h"
+
+#include "QuickAna/QuickAna.h"
+#include "QuickAna/MasterOutputToolXAOD.h"
+
 
 // This is needed to distribute the algorithm to the workers
 // Is that really true...?
@@ -20,7 +26,9 @@ ClassImp(AnalysisAlg)
 // Constructor
 //-----------------------------------------------------------------------------
 AnalysisAlg::AnalysisAlg()
-  : doSystematics(true), m_lastEvent(0)
+  : doSystematics(true), writeXAOD(false), outputXAODName("outputXAOD"),
+    m_quickAna(nullptr), m_outputTool(nullptr),
+    m_lastEvent(0)
 {
 }
 
@@ -31,6 +39,12 @@ EL::StatusCode AnalysisAlg::setupJob(EL::Job& job)
 {
   // Tell the job I need xAOD access
   job.useXAOD();
+
+  // Configure the output xAOD stream
+  if(writeXAOD) {
+    job.outputAdd( EL::OutputStream(outputXAODName, "xAOD") );
+  }
+
   return EL::StatusCode::SUCCESS;
 }
 
@@ -51,6 +65,19 @@ EL::StatusCode AnalysisAlg::initialize()
       CP::make_systematics_vector( quickAna->recommendedSystematics() );
     if(quickAna->setSystematics(sysList).isFailure())
       return EL::StatusCode::FAILURE;
+  }
+
+  // Setup output xAOD tool
+  if(writeXAOD) {
+    auto outputFile = wk()->getOutputFile(outputXAODName);
+    if(wk()->xaodEvent()->writeTo(outputFile).isFailure())
+      return EL::StatusCode::FAILURE;
+    auto outputTool = CxxUtils::make_unique<ana::MasterOutputToolXAOD>("OutputTool");
+    if(outputTool->setProperty("EventData", quickAna->getEventData()).isFailure())
+      return EL::StatusCode::FAILURE;
+    if(outputTool->initialize().isFailure())
+      return EL::StatusCode::FAILURE;
+    m_outputTool = std::move(outputTool);
   }
 
   // Book some histograms for each systematic
@@ -180,6 +207,20 @@ EL::StatusCode AnalysisAlg::execute()
 
   }
 
+  // Fill output xAOD
+  if(m_outputTool) {
+    if(m_outputTool->write().isFailure()) {
+      Error("AnalysisAlg::execute", "ERROR in output tool");
+      return EL::StatusCode::FAILURE;
+    }
+    int numBytes = evtStore->fill();
+    if(numBytes <= 0) {
+      Warning("AnalysisAlg::execute",
+              "TEvent::fill reported %i bytes written in entry %i",
+              numBytes, i);
+    }
+  }
+
   return EL::StatusCode::SUCCESS;
 }
 
@@ -188,5 +229,14 @@ EL::StatusCode AnalysisAlg::execute()
 //-----------------------------------------------------------------------------
 EL::StatusCode AnalysisAlg::finalize()
 {
+  // Finalize and close our output xAOD file
+  if(writeXAOD) {
+    auto outputFile = wk()->getOutputFile(outputXAODName);
+    auto evtStore = wk()->xaodEvent();
+    if(evtStore->finishWritingTo(outputFile).isFailure()) {
+      Error("AnalysisAlg::finalize", "Error finalizing output xAOD");
+      return EL::StatusCode::FAILURE;
+    }
+  }
   return EL::StatusCode::SUCCESS;
 }

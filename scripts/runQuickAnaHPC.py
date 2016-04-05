@@ -28,6 +28,8 @@ def parse_args():
             'is the total number of tasks. If specified, the input samples ' +
             'will be split into N chunks and I will process chunk i=ID only.')
     add_arg('--maxEvents', type=int, help='Set max number of events per sample')
+    add_arg('--writeXAOD', action='store_true',
+            help='Activate output xAOD writing')
     add_arg('--driver', choices=['direct', 'pdsf', 'proof'], default='direct',
             help='Specify the EL driver to use')
     add_arg('--eventsPerWorker', type=int,
@@ -127,6 +129,8 @@ def main():
         alg.doSystematics = False
     if args.opt:
         alg.schedulerDef = 'optimized'
+    if args.writeXAOD:
+        alg.writeXAOD = True
     job.algsAdd(alg)
 
     # Driver
