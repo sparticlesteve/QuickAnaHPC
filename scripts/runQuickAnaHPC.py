@@ -109,6 +109,9 @@ def main():
     # Configure the job
     job = EL.Job()
     job.sampleHandler(sh)
+    # Perf stats
+    job.options().setDouble(EL.Job.optXAODPerfStats, 1)
+    #job.options().setDouble(EL.Job.optPrintPerFileStats, 1)
     if args.maxEvents:
         job.options().setInteger(job.optMaxEvents, int(args.maxEvents))
 
