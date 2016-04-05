@@ -92,7 +92,7 @@ EL::StatusCode AnalysisAlg::execute()
 {
   // Printouts for progress and processing rate
   static int i = 0;
-  const int freq = 100;
+  const int freq = 1000;
   static auto lastTime = std::chrono::steady_clock::now();
   if((i % freq) == 0) {
     typedef std::chrono::duration<float> fsec;
@@ -102,7 +102,7 @@ EL::StatusCode AnalysisAlg::execute()
     lastTime = currentTime;
     Info("AnalysisAlg::execute", "Entry %i, %f evts/s", i, rate);
   }
-  i++;
+  ++i;
 
   // Workaround for duplicate successive events issue.
   // Compare event number to last one and skip if they're the same.
