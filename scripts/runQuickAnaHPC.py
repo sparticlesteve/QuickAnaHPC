@@ -112,8 +112,10 @@ def main():
     job = EL.Job()
     job.sampleHandler(sh)
     # Perf stats
-    job.options().setDouble(EL.Job.optXAODPerfStats, 1)
-    #job.options().setDouble(EL.Job.optPrintPerFileStats, 1)
+    jobOpts = job.options()
+    jobOpts.setDouble(EL.Job.optXAODPerfStats, 1)
+    jobOpts.setDouble(EL.Job.optCacheSize, 100*1024*1024)
+    jobOpts.setDouble(EL.Job.optCacheLearnEntries, 10)
     if args.maxEvents:
         job.options().setInteger(job.optMaxEvents, args.maxEvents)
 
