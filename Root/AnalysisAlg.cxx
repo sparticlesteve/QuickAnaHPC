@@ -53,6 +53,8 @@ EL::StatusCode AnalysisAlg::setupJob(EL::Job& job)
 //-----------------------------------------------------------------------------
 EL::StatusCode AnalysisAlg::initialize()
 {
+  Info("initialize", "Initializing AnalysisAlg");
+
   // Initialize QuickAna
   auto quickAna = CxxUtils::make_unique<ana::QuickAna>("quickana");
   quickAna->setConfig(*this);
@@ -61,6 +63,7 @@ EL::StatusCode AnalysisAlg::initialize()
 
   // Setup systematics
   if(doSystematics) {
+    Info("initialize", "Configuring systematics");
     auto sysList =
       CP::make_systematics_vector( quickAna->recommendedSystematics() );
     if(quickAna->setSystematics(sysList).isFailure())
@@ -69,6 +72,7 @@ EL::StatusCode AnalysisAlg::initialize()
 
   // Setup output xAOD tool
   if(writeXAOD) {
+    Info("initialize", "Configuring output xAOD: %s", outputXAODName.c_str());
     auto outputFile = wk()->getOutputFile(outputXAODName);
     if(wk()->xaodEvent()->writeTo(outputFile).isFailure())
       return EL::StatusCode::FAILURE;
