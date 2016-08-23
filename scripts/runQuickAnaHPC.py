@@ -28,6 +28,7 @@ def parse_args():
             'is the total number of tasks. If specified, the input samples ' +
             'will be split into N chunks and I will process chunk i=ID only.')
     add_arg('--maxEvents', type=int, help='Set max number of events per sample')
+    add_arg('--accessMode', default='class', help='xAOD access mode')
     add_arg('--writeXAOD', action='store_true',
             help='Activate output xAOD writing')
     add_arg('--driver', choices=['direct', 'pdsf', 'proof'], default='direct',
@@ -111,8 +112,9 @@ def main():
     # Configure the job
     job = EL.Job()
     job.sampleHandler(sh)
-    # Perf stats
     jobOpts = job.options()
+    jobOpts.setString(EL.Job.optXaodAccessMode, args.accessMode)
+    # Perf stats
     jobOpts.setDouble(EL.Job.optXAODPerfStats, 1)
     jobOpts.setDouble(EL.Job.optCacheSize, 100*1024*1024)
     jobOpts.setDouble(EL.Job.optCacheLearnEntries, 10)
