@@ -28,6 +28,35 @@ def split_samples(sh, num_events=150000):
         splitSH.add(SH.splitSample(sample, num_events))
     return splitSH
 
+def _split_samples_worker(sample, num_events):
+    """Worker process function for split_samples_mp"""
+    from ROOT import SH
+    SH.scanNEvents(sample)
+    return SH.splitSample(sample, num_events)
+
+def split_samples_mp(sh, num_events=150000, num_workers=8):
+    """
+    Same as split_samples function except uses a pool of process workers to
+    scan and split samples.
+    """
+    import multiprocessing as mp
+    from functools import partial
+    from ROOT import SH
+
+    # Need to set the num_events parameter ahead of time for pool.map
+    worker = partial(_split_samples_worker, num_events=num_events)
+
+    # Start the worker pool
+    pool = mp.Pool(processes=num_workers)
+    samples = [s for s in sh]
+    samples = pool.map(worker, samples)
+
+    # Combine results into new SampleHandler
+    splitSH = SH.SampleHandler()
+    for s in samples:
+        splitSH.add(s)
+    return splitSH
+
 def select_by_task(sh, task_id, num_tasks):
     """
     Returns a new SampleHandler object with the fractional subset of samples
