@@ -7,10 +7,13 @@ def scan_samples(scanDir, samplePatterns = []):
     sh = SH.SampleHandler()
     sh.setMetaString('nc_tree', 'CollectionTree')
     scanDir = os.path.expandvars(scanDir)
-    patterns = ['*'+p+'*' for p in samplePatterns]
-    if len(patterns) == 0: patterns = ['*']
-    for pattern in patterns:
-        SH.ScanDir().samplePattern(pattern).scan(sh, scanDir)
+    if len(samplePatterns) > 0:
+        patterns = ['*'+p+'*' for p in samplePatterns]
+        if len(patterns) == 0: patterns = ['*']
+        for pattern in patterns:
+            SH.ScanDir().samplePattern(pattern).scan(sh, scanDir)
+    else:
+        SH.ScanDir().scan(sh, scanDir)
     return sh
 
 def split_samples(sh, num_events=150000):
