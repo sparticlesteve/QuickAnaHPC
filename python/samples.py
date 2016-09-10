@@ -55,6 +55,20 @@ def split_samples_mp(sh, num_events, worker_pool):
         splitSH.add(s)
     return splitSH
 
+def _count_events_worker(sample):
+    """Worker process function for count_events_mp"""
+    #logger.info('Counting events in %s', sample.name())
+    return sample.getNumEntries()
+
+def count_events_mp(sh, worker_pool):
+    """
+    Counts number of events in each sample and returns the ordered list.
+    Not sure why this isn't automatically done in SampleHandler.
+    """
+    samples = [s for s in sh]
+    worker = _count_events_worker
+    return worker_pool.map(worker, samples)
+
 def select_by_task(sh, task_id, num_tasks):
     """
     Returns a new SampleHandler object with the fractional subset of samples
