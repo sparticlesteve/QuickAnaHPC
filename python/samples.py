@@ -34,12 +34,11 @@ def _split_samples_worker(sample, num_events):
     SH.scanNEvents(sample)
     return SH.splitSample(sample, num_events)
 
-def split_samples_mp(sh, num_events=150000, num_workers=8):
+def split_samples_mp(sh, num_events, worker_pool):
     """
     Same as split_samples function except uses a pool of process workers to
     scan and split samples.
     """
-    import multiprocessing as mp
     from functools import partial
     from ROOT import SH
 
@@ -47,9 +46,8 @@ def split_samples_mp(sh, num_events=150000, num_workers=8):
     worker = partial(_split_samples_worker, num_events=num_events)
 
     # Start the worker pool
-    pool = mp.Pool(processes=num_workers)
     samples = [s for s in sh]
-    samples = pool.map(worker, samples)
+    samples = worker_pool.map(worker, samples)
 
     # Combine results into new SampleHandler
     splitSH = SH.SampleHandler()
